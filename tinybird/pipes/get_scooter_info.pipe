@@ -1,0 +1,27 @@
+TOKEN "untitled_pipe_2128_endpoint_read_8672" READ
+
+NODE get_scooter
+SQL >
+
+    %
+    SELECT *
+    FROM get_latest_events
+    WHERE
+        scooter_id
+        = {{ String(scooter_id, '5c327e82-30d5-4d5c-9f1e-50a911a26824') }}
+
+
+
+NODE endpoint
+SQL >
+
+    SELECT
+      scooter_make,
+      scooter_model,
+      battery_percent,
+      status,
+      fault_severity
+    FROM get_scooter
+    LEFT JOIN scooter_info USING(scooter_id)
+
+

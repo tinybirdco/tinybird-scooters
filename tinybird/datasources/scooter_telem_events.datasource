@@ -1,0 +1,14 @@
+
+SCHEMA >
+    `battery_percent` Int16 `json:$.battery_percent`,
+    `fault_severity` String `json:$.fault_severity`,
+    `journey_id` String `json:$.journey_id`,
+    `latitude` Float32 `json:$.latitude`,
+    `longitude` Float32 `json:$.longitude`,
+    `scooter_id` String `json:$.scooter_id`,
+    `status` String `json:$.status`,
+    `timestamp` DateTime `json:$.timestamp`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYear(timestamp)"
+ENGINE_SORTING_KEY "timestamp"

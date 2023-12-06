@@ -1,0 +1,15 @@
+NODE mv
+SQL >
+
+    SELECT *
+    FROM scooter_telem_events
+    ORDER BY timestamp DESC
+    LIMIT 1 BY scooter_id
+
+TYPE materialized
+DATASOURCE scooter_telem_events_latest
+ENGINE "ReplacingMergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "scooter_id"
+ENGINE_VER "timestamp"
+

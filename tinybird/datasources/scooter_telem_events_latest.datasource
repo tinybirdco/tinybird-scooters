@@ -1,0 +1,16 @@
+# Data Source created from Pipe 'scooter_telem_events_latest_mv'
+
+SCHEMA >
+    `battery_percent` Int16,
+    `fault_severity` String,
+    `journey_id` String,
+    `latitude` Float32,
+    `longitude` Float32,
+    `scooter_id` String,
+    `status` String,
+    `timestamp` DateTime
+
+ENGINE "ReplacingMergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "scooter_id"
+ENGINE_VER "timestamp"

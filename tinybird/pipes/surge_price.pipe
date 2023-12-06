@@ -1,0 +1,20 @@
+TOKEN "surge_price_endpoint_read_3043" READ
+
+NODE get_latest_values
+SQL >
+
+    SELECT * FROM get_latest_events
+
+
+
+NODE endpoint
+SQL >
+
+    %
+    SELECT
+      count() AS available_scooters, 
+      count() < {{UInt16(surge_threshold, 50)}} AS surge
+    FROM get_latest_values
+    WHERE status = 'available'
+
+

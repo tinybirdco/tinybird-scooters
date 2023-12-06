@@ -1,0 +1,26 @@
+TOKEN "nearest_scooters_for_charging_endpoint_read_0119" READ
+
+NODE get_latest_values
+SQL >
+
+    SELECT * FROM get_latest_events
+
+
+
+NODE endpoint
+SQL >
+
+    %
+    SELECT
+      scooter_id,
+      latitude,
+      longitude
+    FROM get_latest_values
+    WHERE battery_percent < {{UInt16(charging_threshold, 30, description="Only show scooters with battery below this percent, 0-100")}}
+    AND status != 'fault'
+    ORDER BY battery_percent ASC
+    {% if defined(num_results) %}
+      LIMIT {{UInt16(num_results, 10, "The number of scooters to display")}}
+    {% end %}
+
+

@@ -1,0 +1,26 @@
+TOKEN "scooters_with_faults_endpoint_read_0345" READ
+
+NODE get_latest_values
+SQL >
+
+    SELECT * FROM get_latest_events
+
+
+
+NODE endpoint
+SQL >
+
+    %
+    SELECT
+      scooter_id,
+      latitude,
+      longitude,
+      fault_severity
+    FROM get_latest_values
+    WHERE status = 'fault'
+    AND fault_severity in {{Array(fault_severities, 'String', default='INFO,WARNING,CRITICAL')}}
+    {% if defined(num_results) %}
+      LIMIT {{UInt16(num_results, 10, "The number of scooters to display")}}
+    {% end %}
+
+

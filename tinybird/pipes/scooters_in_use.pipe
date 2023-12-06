@@ -1,0 +1,24 @@
+TOKEN "scooters_in_use_endpoint_read_5319" READ
+
+NODE get_latest_values
+SQL >
+
+    SELECT * FROM get_latest_events
+
+
+
+NODE endpoint
+SQL >
+
+    %
+    SELECT
+      scooter_id,
+      latitude,
+      longitude
+    FROM get_latest_values
+    WHERE status = 'in_use'
+    {% if defined(num_results) %}
+        LIMIT {{UInt16(num_results, 10, "The number of scooters to display")}}
+    {% end %}
+
+
