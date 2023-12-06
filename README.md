@@ -97,7 +97,7 @@ KAFKA_GROUP_ID <choose a consumer group ID>
 
 You're going to enrich scooter telemetry events with dimensions in S3. To do that, upload the [`scooter_info.csv`](/tinybird/scripts/scooter_info.csv) to an S3 bucket, and use the [S3 Connector](https://www.tinybird.co/docs/ingest/s3.html) to sync that file to Tinybird.
 
-## Alternatively, you can simply upload the `scooter_info.csv` file to Tinybird directly.
+Alternatively, you can simply upload the `scooter_info.csv` file to Tinybird directly.
 
 ### Push the remaining resources to the Tinybird server
 
