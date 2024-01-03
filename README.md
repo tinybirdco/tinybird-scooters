@@ -15,12 +15,12 @@ git clone https://github.com/tinybirdco/tinybird-scooters.git
 cd tinybird-scooters
 ```
 
-### 3. Install the Tinybird CLI
+### 3. Install the Tinybird CLI and dependencies
 
 ```bash
 python -mvenv .e
 . .e/bin/activate
-pip install tinybird-cli
+pip install tinybird-cli ndjson confluent_kafka
 ```
 
 ### 4. Authenticate to Tinybird
