@@ -13,7 +13,7 @@ from confluent_kafka import Producer
 CONFLUENT_SERVER = 'your_bootstrap_server'
 CONFLUENT_KEY = 'your_confluent_access_key'
 CONFLUENT_SECRET = 'your_confluent_secret'
-
+TOPIC_NAME = 'scooter_telemetry'
 
 def generate_data(uuids, state):
     data_list = []
@@ -119,7 +119,7 @@ def generate_data(uuids, state):
 
 def send_to_kafka(producer, data):
     for row in data:
-        producer.produce("scooter_telemetry", value=json.dumps(row))
+        producer.produce(TOPIC_NAME, value=json.dumps(row))
     producer.flush()
 
 
