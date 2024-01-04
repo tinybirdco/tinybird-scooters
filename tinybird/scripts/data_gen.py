@@ -5,6 +5,7 @@ from uuid import uuid4
 from datetime import datetime, timedelta
 import random
 import requests
+import pprint
 from random import choices
 import math
 from time import sleep
@@ -15,10 +16,17 @@ CONFLUENT_KEY = 'your_confluent_access_key'
 CONFLUENT_SECRET = 'your_confluent_secret'
 TOPIC_NAME = 'scooter_telemetry'
 
+# Scooter bounding box. 
+# Currently in Las Vegas. 
+LAT_MIN = 36.08144597233949
+LAT_MAX = 36.27704846619167
+LONG_MIN = -115.31338500392567
+LONG_MAX = -115.06091073530962
+
 def generate_data(uuids, state):
     data_list = []
     for scooter_id in uuids:
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         status_changed_time = state.get(scooter_id, {}).get(
             'status_changed_time', timestamp)
         journey_id = 'none'
@@ -47,6 +55,9 @@ def generate_data(uuids, state):
 
                 if battery_percent < 5:
                     status = 'available'
+                    # Battery restored to full capacity.
+                    # print(f"Battery recharged for {scooter_id}")
+                    battery_precent = 100
             elif status == 'available':
                 if battery_percent < 25:  # bikes under 25% battery should never be used
                     status = 'available'
@@ -68,7 +79,7 @@ def generate_data(uuids, state):
                 latitude += random.uniform(-0.00002, 0.00002)
                 longitude += random.uniform(-0.00002, 0.00002)
                 # Update battery percent
-                time_diff = datetime.now() - datetime.strptime(last_battery_decrement_time,
+                time_diff = datetime.utcnow() - datetime.strptime(last_battery_decrement_time,
                                                                "%Y-%m-%d %H:%M:%S")
                 if time_diff.total_seconds() >= 25:
                     last_battery_decrement_time = timestamp
@@ -81,9 +92,8 @@ def generate_data(uuids, state):
             journey_duration = 0
             if status == 'in_use':  # if we have changed to in_use, we need to set a journey duration
                 journey_duration = random.randint(60, 300)
-            latitude = random.uniform(36.08144597233949, 36.27704846619167)
-            longitude = random.uniform(-115.31338500392567, -
-                                       115.06091073530962)
+            latitude = random.uniform(LAT_MIN, LAT_MAX)
+            longitude = random.uniform(LONG_MIN, LONG_MAX)
             battery_percent = max(
                 0, min(100, math.floor(random.normalvariate(60, 20))))
             last_battery_decrement_time = timestamp
@@ -149,7 +159,7 @@ def send_to_tinybird(data):
 
 
 def generate():
-    with open('./uuids.txt', 'r') as file:
+    with open('./uuids.txt', 'r') as file:  # Or './tinybird/scripts/uuids.txt' if your root is the project top folder. 
         uuids = file.read().splitlines()
         state = {}  # Initialize state
         producer = create_kafka_producer()
@@ -157,10 +167,11 @@ def generate():
             print('generating')
             data = generate_data(uuids, state)
             sleep(3)
-            send_to_kafka(producer, data)
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(data)
-
+            send_to_kafka(producer, data) # If you want to send to a Confluent stream. 
+            # send_to_tinybird(data) # If you want to send directly to Tinybird. 
+            
+            # pp = pprint.PrettyPrinter(indent=4)
+            # pp.pprint(data)
 
 # Example usage
 generate()
