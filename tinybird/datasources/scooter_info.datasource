@@ -1,19 +1,13 @@
 
 SCHEMA >
-    `scooter_id` String `json:$.scooter_id`,
-    `scooter_make` String `json:$.scooter_make`,
-    `scooter_model` String `json:$.scooter_model`,
-    `purchased_date` Date `json:$.purchased_date`,
-    `commissioned_date` Date `json:$.commissioned_date`,
-    `last_serviced_date` Date `json:$.last_serviced_date`,
-    `last_serviced_engineer_id` UInt32 `json:$.last_serviced_engineer_id`
+    `scooter_id` String,
+    `scooter_make` String,
+    `scooter_model` String,
+    `purchased_date` Date,
+    `comissioned_date` Date,
+    `last_serviced_date` Date,
+    `last_serviced_engineer_id` Int32
 
 ENGINE "MergeTree"
 ENGINE_PARTITION_KEY "toYear(purchased_date)"
 ENGINE_SORTING_KEY "purchased_date, scooter_make, scooter_model, last_serviced_engineer_id"
-
-IMPORT_SERVICE 's3'
-IMPORT_CONNECTION_NAME 'tinybird-scooters-aws'
-IMPORT_BUCKET_URI 's3://tinybird-scooters/scooter_info.csv'
-IMPORT_STRATEGY 'append'
-IMPORT_SCHEDULE '@on-demand'
