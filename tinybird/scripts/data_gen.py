@@ -61,6 +61,8 @@ def generate_data(uuids, state):
             elif status == 'available':
                 if battery_percent < 25:  # bikes under 25% battery should never be used
                     status = 'available'
+                    print(f"Battery fully recharged for {scooter_id}")
+                    battery_precent = 100
                 else:
                     status = choices(['available', 'in_use', 'fault'], weights=[
                                      90, 9.5, 0.5], k=1)[0]
