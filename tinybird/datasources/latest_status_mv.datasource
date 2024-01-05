@@ -1,0 +1,14 @@
+# Data Source created from Pipe 'status_mv'
+
+SCHEMA >
+    `timestamp` DateTime,
+    `scooter_id` String,
+    `status` LowCardinality(String),
+    `latitude` Float32,
+    `longitude` Float32,
+    `battery_percent` Int8
+
+ENGINE "ReplacingMergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, scooter_id, battery_percent"
+ENGINE_VER "timestamp"

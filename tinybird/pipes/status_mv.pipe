@@ -1,0 +1,15 @@
+NODE get_lastest
+SQL >
+
+    SELECT timestamp, scooter_id, status, latitude, longitude, battery_percent 
+    FROM scooter_telem_events
+    ORDER BY timestamp DESC
+    LIMIT 1 BY scooter_id
+
+TYPE materialized
+DATASOURCE latest_status_mv
+ENGINE "ReplacingMergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "timestamp, scooter_id, battery_percent"
+ENGINE_VER "timestamp"
+

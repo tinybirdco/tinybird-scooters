@@ -1,0 +1,53 @@
+TOKEN "nearest_available_scooter_endpoint_read_0809" READ
+
+NODE get_lastest_events
+SQL >
+
+    %
+    SELECT *
+    FROM scooter_telem_events
+    {% if defined(scooter_id) %}
+    	WHERE scooter_id = {{ String(scooter_id) }}
+    {% end %}
+    ORDER BY timestamp DESC
+    LIMIT 1 BY scooter_id
+
+
+
+
+NODE filter_by_battery_percent_and_available
+SQL >
+
+    %
+    SELECT
+      scooter_id,
+      latitude,
+      longitude
+    FROM get_lastest_events
+    WHERE battery_percent > {{UInt16(battery_threshold, 25, description="Only show scooters with battery above this percent, 0-100")}}
+    AND status = 'available'
+
+
+
+NODE endpoint
+SQL >
+
+    %
+        SELECT
+          scooter_id,
+          latitude,
+          longitude,
+          sqrt(pow(latitude - {{Float32(user_latitude, 36.08329)}},2) + pow(longitude - {{Float32(user_longitude, -115.2967)}},2)) AS distance
+        FROM filter_by_battery_percent_and_available
+        ORDER BY distance ASC
+        LIMIT {{UInt16(num_results, 10, "The number of scooters to display")}}
+
+
+
+NODE nearest_available_scooter_3
+SQL >
+
+    SELECT * FROM endpoint
+    LIMIT 10
+
+

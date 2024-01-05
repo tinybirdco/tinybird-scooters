@@ -1,0 +1,47 @@
+DESCRIPTION >
+	This version is built with a Materialized View.
+
+
+TOKEN "nearest_available_scooter_2_endpoint_read_7344" READ
+
+NODE get_lastest_events
+SQL >
+
+    %
+    SELECT scooter_id, battery_percent, *
+    FROM latest_status_mv
+    ORDER BY timestamp DESC
+    LIMIT 1 BY scooter_id
+
+
+
+
+
+NODE filter_by_battery_percent_and_available
+SQL >
+
+    %
+    SELECT
+      scooter_id,
+      latitude,
+      longitude
+    FROM get_lastest_events
+    WHERE battery_percent > {{UInt16(battery_threshold, 25, description="Only show scooters with battery above this percent, 0-100")}}
+    AND status = 'available'
+
+
+
+NODE endpoint
+SQL >
+
+    %
+        SELECT
+          scooter_id,
+          latitude,
+          longitude,
+          sqrt(pow(latitude - {{Float32(user_latitude, 36.08329)}},2) + pow(longitude - {{Float32(user_longitude, -115.2967)}},2)) AS distance
+        FROM filter_by_battery_percent_and_available
+        ORDER BY distance ASC
+        LIMIT {{UInt16(num_results, 10, "The number of scooters to display")}}
+
+
